@@ -6,17 +6,17 @@ debug = True
 
 # Set up the field
 Field = dict()
-Field['OZ'] = [  0,  0,  25, 45] # Own Zone
-Field['L1'] = [ 25, 30,  55, 45] # Left Zones
-Field['L2'] = [ 55, 30,  85, 45]
-Field['L3'] = [ 85, 30, 115, 45]
-Field['C1'] = [ 25, 15,  55, 30] # Center Zones
-Field['C2'] = [ 55, 15,  85, 30]
-Field['C3'] = [ 85, 15, 115, 30]
-Field['R1'] = [ 25,  0,  55, 15] # Right Zones
-Field['R2'] = [ 55,  0,  85, 15]
-Field['R3'] = [ 85,  0, 115, 15]
-Field['EZ'] = [115,  0, 140, 45] # End Zone
+Field['OZ'] = [(  0,  0),(  25, 45)] # Own Zone
+Field['L1'] = [( 25, 30),(  55, 45)] # Left Zones
+Field['L2'] = [( 55, 30),(  85, 45)]
+Field['L3'] = [( 85, 30),( 115, 45)]
+Field['C1'] = [( 25, 15),(  55, 30)] # Center Zones
+Field['C2'] = [( 55, 15),(  85, 30)]
+Field['C3'] = [( 85, 15),( 115, 30)]
+Field['R1'] = [( 25,  0),(  55, 15)] # Right Zones
+Field['R2'] = [( 55,  0),(  85, 15)]
+Field['R3'] = [( 85,  0),( 115, 15)]
+Field['EZ'] = [(115,  0),( 140, 45)] # End Zone
 
 # Set up Player Positions
 Player_positions = ['Left', 'Center', 'Right']
@@ -42,7 +42,15 @@ for team in Teams:
 # Set up overall game status.
 Status = dict()
 Status['Time'] = 0 # Game time, meaning a count of plays
-Status['Posession'] = 'Home' # the Home team starts with the disc. They kick off to the away team.
+Status['Posession'] = ['Home', 'Center'] # the Home Center starts with the disc, and kicks off to the Away team.
+
+# Set up player location
+
+
+
+# With great fanfare, have the players take the field
+# def TakeTheField()
+
 
 
 # Debug actions

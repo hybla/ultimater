@@ -1,5 +1,6 @@
 import random
 import os
+import json
 
 # Are we in debug mode?
 debug = True
@@ -77,6 +78,18 @@ def CreateTeamGenome(team_name):
 
     return Genome
 
+# Saves a genome to a file
+def Save_genome_to_file(genome, filename):
+    with open(filename, 'w') as outfile:
+        json.dump(genome, outfile)
+    
+# Reads a genome from a file
+def Read_genome_from_file(filename):
+    with open(filename) as json_file:
+        data = json.load(json_file)
+    return data
+
+
 if debug == True:
     genome = CreateTeamGenome('test')
     print('the whole genome is: \n', genome, '\n')
@@ -90,8 +103,11 @@ if debug == True:
     nwd = os.getcwd()
     print('Current Directory is: ', nwd)
     
-    with open('TestTeam.txt', 'w') as f:
-        print(CreateTeamGenome('test'), file=f)
+    # with open('TestTeam.txt', 'w') as f:
+    #    print(CreateTeamGenome('test'), file=f)
 
+    Save_genome_to_file(genome, 'testy123.txt')
+    ImportedGenome = Read_genome_from_file('testy123.txt')
+    print('Imported genome is:', ImportedGenome)
 
 # done.
