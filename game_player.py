@@ -1,8 +1,9 @@
 import random
 import os
+import json
 
 # Are we in debug mode?
-debug = True
+# debug = False
 
 # Set up the field
 Field = dict()
@@ -44,40 +45,64 @@ Status = dict()
 Status['Time'] = 0 # Game time, meaning a count of plays
 Status['Posession'] = ['Home', 'Center'] # the Home Center starts with the disc, and kicks off to the Away team.
 
-# Set up player location
+# Set up starting (kickoff) player locations
+Player_location = dict()
+Player_location['Home_Left']   = (  0, 35)
+Player_location['Home_Center'] = (  0, 22)
+Player_location['Home_Right']  = (  0, 10)
+Player_location['Away_Left']   = (115, 10)
+Player_location['Away_Center'] = (115, 22)
+Player_location['Away_Right']  = (115, 35)
 
+# These two functions are also in gene_generator.py, we should move these things into libraries so taht we don't have to duplicate them.
+# Saves a genome to a file
+def Savefile(data, filename):
+    with open(filename, 'w') as outfile:
+        json.dump(data, outfile)
 
+# Reads a genome from a file
+def Readfile(filename):
+    with open(filename) as json_file:
+        data = json.load(json_file)
+    return data
 
-# With great fanfare, have the players take the field
-# def TakeTheField()
+# Load two team genomes from files, not a real function yet
+Generation = 'TEST2'
+Path = '/Users/testuser/Projects/ultimater/data/teams/test'
+os.chdir(Path)
+Teamlist = Readfile('GEN-' + Generation + '_teamlist')
+print(Teamlist)
+HomeTeam = Teamlist['Teams'][0]
+AwayTeam = Teamlist['Teams'][1]
+print(HomeTeam,AwayTeam)
 
 
 
 # Debug actions
-if debug:
-    print('----- Field Debug -----\n')
-    print('the field is:\n', Field)
-    print('here is the whole field:\n')
-    for zone in Field:
-        print(zone, ': ', Field[zone])
-
-    print('\n----- Scoreboard Debug -----')
-    print('the Scoreboard is:\n', Scoreboard)
-    print('\nhere is the whole Scoreboard:')
-    for key in Scoreboard:
-        print(key, ': ', Scoreboard[key])
-
-    print('\n----- Roster Debug -----')
-    print('the Roster is:\n', Roster)
-    print('\nhere is the whole Roster:')
-    for key in Roster:
-        print(key, ': ', Roster[key])
-    
-    print('\n----- Status Debug -----')
-    print('the Status is:\n', Status)
-    print('\nhere is the whole Status:')
-    for key in Status:
-        print(key, ': ', Status[key])
-
+#if debug:
+#    print('----- Field Debug -----\n')
+#    print('the field is:\n', Field)
+#    print('here is the whole field:\n')
+#    for zone in Field:
+#        print(zone, ': ', Field[zone])
+#
+#    print('\n----- Scoreboard Debug -----')
+#    print('the Scoreboard is:\n', Scoreboard)
+#    print('\nhere is the whole Scoreboard:')
+#    for key in Scoreboard:
+#        print(key, ': ', Scoreboard[key])
+#
+#    print('\n----- Roster Debug -----')
+#    print('the Roster is:\n', Roster)
+#    print('\nhere is the whole Roster:')
+#    for key in Roster:
+#        print(key, ': ', Roster[key])
+#    
+#    print('\n----- Status Debug -----')
+#    print('the Status is:\n', Status)
+#    print('\nhere is the whole Status:')
+#    for key in Status:
+#        print(key, ': ', Status[key])
+#    print('\nHomeGenes:', HomeGenes)
 # done.
 

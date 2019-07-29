@@ -2,8 +2,7 @@ import random
 import os
 import json
 
-# Are we in debug mode?
-debug = True
+debug = False
 
 # Create the list of Zones:
 # OZ (own zone)
@@ -89,6 +88,27 @@ def Read_genome_from_file(filename):
         data = json.load(json_file)
     return data
 
+# Creates a set of teams and saves them as individual files
+def Create_teams(qty, generation, path):
+    Teamlist = dict()
+    Teamlist['Generation'] = 'GEN-' + generation
+    Teamlist['Path'] = path
+    Teamlist['Teams'] = []
+    os.chdir(path)
+    for n in range(qty):
+        teamname = 'GEN-' + generation + '_' + str(n).zfill(3)
+        genome = CreateTeamGenome(teamname)
+        Save_genome_to_file(genome, teamname)
+        Teamlist['Teams'].append(teamname)
+    with open('GEN-' + generation + '_teamlist', 'w') as outfile:
+        json.dump(Teamlist, outfile)
+    return Teamlist
+       
+Create_teams(100, 'TEST2','/Users/testuser/Projects/ultimater/data/teams/test')
+
+# print(str(1).zfill(3))
+
+
 
 if debug == True:
     genome = CreateTeamGenome('test')
@@ -99,15 +119,12 @@ if debug == True:
 
     cwd = os.getcwd()
     print('Current Directory is: ', cwd)
-    os.chdir("/Users/testuser/Projects/ultimater/data/teams")
+    os.chdir("/Users/testuser/Projects/ultimater/data/teams/test")
     nwd = os.getcwd()
     print('Current Directory is: ', nwd)
     
-    # with open('TestTeam.txt', 'w') as f:
-    #    print(CreateTeamGenome('test'), file=f)
-
-    Save_genome_to_file(genome, 'testy123.txt')
-    ImportedGenome = Read_genome_from_file('testy123.txt')
+    Save_genome_to_file(genome, 'test001.txt')
+    ImportedGenome = Read_genome_from_file('test001.txt')
     print('Imported genome is:', ImportedGenome)
 
 # done.
