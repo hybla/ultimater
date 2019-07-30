@@ -2,6 +2,9 @@ import random
 import os
 import json
 
+# import my own modules
+import m_file
+
 # Are we in debug mode?
 # debug = False
 
@@ -20,7 +23,7 @@ Field['R3'] = [( 85,  0),( 115, 15)]
 Field['EZ'] = [(115,  0),( 140, 45)] # End Zone
 
 # Set up Player Positions
-Player_positions = ['Left', 'Center', 'Right']
+player_positions = ['Left', 'Center', 'Right']
 
 # Set up Teams
 Teams = ['Home', 'Away']
@@ -28,7 +31,7 @@ Teams = ['Home', 'Away']
 # Set up Rosters
 Roster = dict()
 for team in Teams:
-    Roster[team] = Player_positions
+    Roster[team] = player_positions
 
 # Set up game stats. These will be tracked for teams and maybe for individual players as well.
 Stats = ['Goals', 'Completions', 'Interceptions', 'Incomplete_passes']
@@ -54,27 +57,72 @@ Player_location['Away_Left']   = (115, 10)
 Player_location['Away_Center'] = (115, 22)
 Player_location['Away_Right']  = (115, 35)
 
-# These two functions are also in gene_generator.py, we should move these things into libraries so taht we don't have to duplicate them.
-# Saves a genome to a file
-def Savefile(data, filename):
-    with open(filename, 'w') as outfile:
-        json.dump(data, outfile)
-
-# Reads a genome from a file
-def Readfile(filename):
-    with open(filename) as json_file:
-        data = json.load(json_file)
-    return data
-
-# Load two team genomes from files, not a real function yet
-Generation = 'TEST2'
+# Load the home and away team genomes. In the future this should be
+# done creating the team pairngs for a round-robin, but for
+# now we are just making them by hand.
+generation = 'TEST2'
 Path = '/Users/testuser/Projects/ultimater/data/teams/test'
 os.chdir(Path)
-Teamlist = Readfile('GEN-' + Generation + '_teamlist')
-print(Teamlist)
-HomeTeam = Teamlist['Teams'][0]
-AwayTeam = Teamlist['Teams'][1]
-print(HomeTeam,AwayTeam)
+Teamlist = m_file.read('GEN-' + generation + '_teamlist')
+home_team_name = Teamlist['Teams'][0]
+away_team_name = Teamlist['Teams'][1]
+home_genes = m_file.read(home_team_name)
+away_genes = m_file.read(away_team_name)
+# print('Home team: {} Away team: {}'.format(home_team_name, away_team_name))
+
+# Define the Team and Player classes
+class Team:
+    player = dict()
+    def __init__(self, name, generation, genes):
+        self.name = name
+        self.generation = generation
+        self.genes = genes
+    def description(self):
+        return 'Team {} is from generation {}'.format(self.name, self.generation)
+
+class Player:
+    location = (0,0)
+    has_disc = False
+
+    steps = 0
+    throws = 0
+    completed_throws = 0
+    intercepted_throws = 0
+    turnovers = 0
+    thrown_goals = 0
+    caught_goals = 0
+    
+    def __init__(self, name, team, position):
+        self.name = name
+        self.team = team
+        self.position = position
+    def description(self):
+        return 'Player {} is on team {}'.format(self.name, self.team.name)
+
+# Instantiate the home and away teams
+home = Team(home_team_name, generation, home_genes)
+away = Team(away_team_name, generation, away_genes)
+print(home.description())
+# print(home.genes)
+
+# Instantiate the players
+home_left = Player('home_left', home, 'left')
+home_center = Player('home_center', home, 'center')
+home_right = Player('home_right', home, 'right')
+away_left = Player('away_left', away, 'left')
+away_center = Player('away_center', away, 'center')
+away_right = Player('away_right', away, 'right')
+
+print(home_left.description())
+print(home_left.team.genes['Threshhold']['Throw'])
+
+
+
+    
+
+
+
+
 
 
 

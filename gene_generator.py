@@ -2,6 +2,9 @@ import random
 import os
 import json
 
+# import my own modules
+import m_file
+
 debug = False
 
 # Create the list of Zones:
@@ -77,17 +80,6 @@ def CreateTeamGenome(team_name):
 
     return Genome
 
-# Saves a genome to a file
-def Save_genome_to_file(genome, filename):
-    with open(filename, 'w') as outfile:
-        json.dump(genome, outfile)
-    
-# Reads a genome from a file
-def Read_genome_from_file(filename):
-    with open(filename) as json_file:
-        data = json.load(json_file)
-    return data
-
 # Creates a set of teams and saves them as individual files
 def Create_teams(qty, generation, path):
     Teamlist = dict()
@@ -98,16 +90,13 @@ def Create_teams(qty, generation, path):
     for n in range(qty):
         teamname = 'GEN-' + generation + '_' + str(n).zfill(3)
         genome = CreateTeamGenome(teamname)
-        Save_genome_to_file(genome, teamname)
+        m_file.save(genome, teamname)
         Teamlist['Teams'].append(teamname)
     with open('GEN-' + generation + '_teamlist', 'w') as outfile:
         json.dump(Teamlist, outfile)
     return Teamlist
        
-Create_teams(100, 'TEST2','/Users/testuser/Projects/ultimater/data/teams/test')
-
-# print(str(1).zfill(3))
-
+Create_teams(100, 'TEST3','/Users/testuser/Projects/ultimater/data/teams/test')
 
 
 if debug == True:
