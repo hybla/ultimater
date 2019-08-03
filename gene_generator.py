@@ -4,8 +4,7 @@ import json
 
 # import my own modules
 import m_file
-
-debug = False
+from m_zones import zones, directions
 
 # Create the list of Zones:
 # OZ (own zone)
@@ -13,10 +12,10 @@ debug = False
 # C2 C2 C3 (center zones)
 # R1 R2 R3 (right zones)
 # EZ (end zone)
-Zones = ['OZ', 'L1', 'L2', 'L3', 'C2', 'C2', 'C3', 'R1', 'R2', 'R3', 'EZ']
+zones = ['OZ', 'L1', 'L2', 'L3', 'C2', 'C2', 'C3', 'R1', 'R2', 'R3', 'EZ']
 
 # Create the list of Directions
-Directions = ['N', 'NE', 'E', 'SE', 'W', 'SW', 'W', 'NW']
+directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
 
 # Create the complete genome for a team
 def CreateTeamGenome(team_name):
@@ -24,19 +23,19 @@ def CreateTeamGenome(team_name):
 # Create the Movement genes
 # Influence whether or not a player will move, and in what direction
     MovementMe = dict()
-    for zone in Zones:
-        for direction in Directions:
+    for zone in zones:
+        for direction in directions:
             key = zone + '_' + direction
             MovementMe[key] = random.random()
 
     MovementOpponent = dict()
-    for direction in Directions:
+    for direction in directions:
         for IsThere in ['Yes', 'No']:
             key = direction + '_' + IsThere 
             MovementOpponent[key] = random.random()
 
     MovementTeammate = dict()
-    for direction in Directions:
+    for direction in directions:
         for IsThere in ['Yes', 'No']:
             key = direction + '_' + IsThere 
             MovementTeammate[key] = random.random()
@@ -44,19 +43,19 @@ def CreateTeamGenome(team_name):
 # Create the Throw Genes
 # Influence whether or not a player will throw, and in what direction
     ThrowMe = dict()
-    for zone in Zones:
-        for direction in Directions:
+    for zone in zones:
+        for direction in directions:
             key = zone + '_' + direction
         ThrowMe[key] = random.random()
 
     ThrowOpponent = dict()
-    for direction in Directions:
+    for direction in directions:
         for IsThere in ['Yes', 'No']:
             key = direction + '_' + IsThere 
             ThrowOpponent[key] = random.random()
 
     ThrowTeammate = dict()
-    for direction in Directions:
+    for direction in directions:
         for IsThere in ['Yes', 'No']:
             key = direction + '_' + IsThere 
             ThrowTeammate[key] = random.random()
@@ -96,24 +95,6 @@ def Create_teams(qty, generation, path):
         json.dump(Teamlist, outfile)
     return Teamlist
        
-Create_teams(100, 'TEST3','/Users/testuser/Projects/ultimater/data/teams/test')
-
-
-if debug == True:
-    genome = CreateTeamGenome('test')
-    print('the whole genome is: \n', genome, '\n')
-    print('team name = ', genome['Team'], '\n')
-    print('Throw threshhold is: \n', genome['Threshhold']['Throw'], '\n')
-    print('ThrowOpponent is: \n', genome['ThrowOpponent'], '\n')
-
-    cwd = os.getcwd()
-    print('Current Directory is: ', cwd)
-    os.chdir("/Users/testuser/Projects/ultimater/data/teams/test")
-    nwd = os.getcwd()
-    print('Current Directory is: ', nwd)
-    
-    Save_genome_to_file(genome, 'test001.txt')
-    ImportedGenome = Read_genome_from_file('test001.txt')
-    print('Imported genome is:', ImportedGenome)
+Create_teams(100, 'TEST2','/Users/testuser/Projects/ultimater/data/teams/test')
 
 # done.
