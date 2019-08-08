@@ -6,24 +6,7 @@ from statistics import mean
 # import my own modules
 import m_file
 from m_angle import angle_to, direction
-from m_zones import zones, directions
-
-
-# Set up the field
-field = dict()
-field['OZ'] = [(  0,  0),(  25, 45)] # Own Zone
-field['L1'] = [( 25, 30),(  55, 45)] # Left Zones
-field['L2'] = [( 55, 30),(  85, 45)]
-field['L3'] = [( 85, 30),( 115, 45)]
-field['C1'] = [( 25, 15),(  55, 30)] # Center Zones
-field['C2'] = [( 55, 15),(  85, 30)]
-field['C3'] = [( 85, 15),( 115, 30)]
-field['R1'] = [( 25,  0),(  55, 15)] # Right Zones
-field['R2'] = [( 55,  0),(  85, 15)]
-field['R3'] = [( 85,  0),( 115, 15)]
-field['EZ'] = [(115,  0),( 140, 45)] # End Zone
-
-    
+from m_zones import zones, directions, field
 
 # function that finds which zone a point is in
 def zone_finder(point):
