@@ -57,10 +57,8 @@ def direction_index(player_dir):
             gene_index.append(d + '_No')
     return gene_index
 
-# Translate a move direction (like N, S, SE etc.) to an offset (like (1, 0)).
+# Translate a move direction (like N, S, SE) to an offset (like (1, 0)).
 # Used by move_offset()
-# Flips east/west direction for away players, so the offset can be applied
-# directly to the player
 def direction_to_offset(d):
     offsets = dict()
     offsets['N']  = ( 0,  1)
@@ -132,16 +130,18 @@ class Player:
         msg = (
             'Details for player named {0}:\n'
             '  Location: {1[0]:d}, {1[1]:d}\n  Has disc: {2}\n'
-            '  Steps Taken: {3}\n  Throws Made: {4}\n  Throws Completed: {5}\n'
-            '  Throws Intercepted: {6}\n  Turnovers: {7}\n  Thrown Goals: {8}\n'
-            '  Caught Goals: {9}\n  Team: {10}\n  Home team: {11}\n'.format(self.name, self.location, self.has_disc,
+            '  Steps Taken: {3}\n  Throws Made: {4}\n'
+            '  Throws Completed: {5}\n'
+            '  Throws Intercepted: {6}\n  Turnovers: {7}\n'
+            '  Thrown Goals: {8}\n  Caught Goals: {9}\n'
+            '  Team: {10}\n  Home team: {11}\n'.format(self.name,
+               self.location, self.has_disc,
                self.steps, self.throws, self.completed_throws,
                self.intercepted_throws, self.turnovers, self.thrown_goals,
                self.caught_goals, self.team.name, self.team.home_team))
         return msg 
 
 class Team:
-    
     def __init__(self, name, generation, genes, home_team):
         self.name = name
         self.generation = generation
@@ -156,11 +156,11 @@ class Team:
             self.center = Player('away_center', 'center', self)
             self.right = Player('away_right', 'right', self)
 
-
     def description(self):
         team_msg = (
             'Details for team {} from generation {}:\n'
-            'Home team: {}\n'.format(self.name, self.generation, self.home_team))
+            'Home team: {}\n'.format(self.name, self.generation,
+                                     self.home_team))
         left_msg = self.left.description()
         center_msg = self.center.description()
         right_msg = self.right.description()
@@ -169,6 +169,7 @@ class Team:
 # Defining the game class
 class Game:
     clock = 0
+    game_record = dict()
 
     def __init__(self, home, away, duration, start_spots):
         self.home = home
@@ -177,6 +178,10 @@ class Game:
         self.start_spots = start_spots
         self.player_list = [home.left, home.center, home.right,
                             away.left, away.center, away.right]
+    # create a dict to hold a complete record of the game
+    # this is saved to a file after the game is played and
+    # used by the viewer to play back the game
+
     def setup(self):
         # Put the players on the field and give the home center the disc
         home.left.location = start_spots['home_left']
@@ -186,6 +191,26 @@ class Game:
         away.center.location = start_spots['away_center']
         away.right.location = start_spots['away_right']
         home.center.has_disc = True
+        self.game_record['Home_Team'] = home.name
+        self.game_record['Away_Team'] = away.name
+        self.game_record['Duration'] = self.duration
+        self.game_record['Start_Spots'] = dict()
+        self.game_record['Start_Spots'] \
+                        ['home_left'] = home.left.location
+        self.game_record['Start_Spots'] \
+                        ['home_center'] = home.center.location
+        self.game_record['Start_Spots'] \
+                        ['home_right'] = home.right.location
+        self.game_record['Start_Spots'] \
+                        ['away_left'] = away.left.location
+        self.game_record['Start_Spots'] \
+                        ['away_center'] = away.center.location
+        self.game_record['Start_Spots'] \
+                        ['away_right'] = away.right.location
+        for n in range(self.duration):
+            self.game_record[n] = dict()
+            self.game_record[n]['Moves'] = ''
+            self.game_record[n]['Throw'] = ''
 
     def print_headline(self):
         print('Today\'s Game: {} (away) vs. {} (home).'.format(self.away.name, self.home.name))
@@ -197,12 +222,13 @@ class Game:
         return msg
 
     def print_all_player_locations(self):
-        print('home L:{} C:{} R:{}\naway L:{} C:{} R:{}'.format(self.home.left.location,
-                                                         self.home.center.location,
-                                                         self.home.right.location,
-                                                         self.away.left.location,
-                                                         self.away.center.location,
-                                                         self.away.right.location))
+        print('home L:{} C:{} R:{}\n'
+              'away L:{} C:{} R:{}'.format(self.home.left.location,
+                                           self.home.center.location,
+                                           self.home.right.location,
+                                           self.away.left.location,
+                                           self.away.center.location,
+                                           self.away.right.location))
                                                                 
     def disc_holder(self):
         # which player has the disc?
@@ -213,12 +239,20 @@ class Game:
                     break
         return dh
 
+    def save_record(self, path):
+        os.chdir(path)
+        m_file.save(self.game_record, self.away.name +
+                                      '_vs_' + game.home.name)
+
     # all the players who can move, and want to move, move
     def move(self):
+        # create a place to store all the moves made.
+        # the method will return this list.
+        moves = dict()
         # create a list of the players who can move (don't have the disc)
         movers = self.player_list.copy()
         movers.remove(self.disc_holder())
-        # create a place to store each players gene_pile
+        # create a place to store all the players gene_piles
         gene_piles = dict()
         for p in movers:
             # create a place to hold all the gene values that will
@@ -293,16 +327,22 @@ class Game:
                 for other in others:
                     if new_location == other.location:
                         do_not_move = True
-                        print('{} is trying to crash into another player'.format(p.name))
-                        print('>> crashing into {} at {}'.format(other.name, other.location))
+                        print('{} is crashing into'
+                              'another player'.format(p.name))
+                        print('>> crashing into'
+                              '{} at {}'.format(other.name, other.location))
                         break
             if do_not_move == False:
-                print('moving {} by offset {} to {}'.format(p.name, offset, new_location))
+                print('moving {} by offset {} to {}'.format(p.name,
+                                                     offset, new_location))
                 p.location = new_location
-
-
-
-
+                mv = dict()
+                mv['offset'] = offset
+                mv['location'] = new_location
+                moves[p.name] = mv
+        self.game_record[self.clock]['Moves'] = moves
+        self.clock += 1
+        return moves
 
 # Load the home and away team genomes. In the future this should be
 # done creating the team pairngs for a round-robin, but for
@@ -311,8 +351,8 @@ generation = 'TEST3'
 Path = '/Users/testuser/Projects/ultimater/data/teams/test'
 os.chdir(Path)
 Teamlist = m_file.read('GEN-' + generation + '_teamlist')
-home_team_name = Teamlist['Teams'][5]
-away_team_name = Teamlist['Teams'][70]
+home_team_name = Teamlist['Teams'][3]
+away_team_name = Teamlist['Teams'][4]
 home_genes = m_file.read(home_team_name)
 away_genes = m_file.read(away_team_name)
 
@@ -321,7 +361,7 @@ home = Team(home_team_name, generation, home_genes, True)
 away = Team(away_team_name, generation, away_genes, False)
 
 # Instantiate the game
-game = Game(home, away, 100, start_spots)
+game = Game(home, away, 500, start_spots)
 print('after instantiating the game:')
 game.print_all_player_locations()
 
@@ -330,11 +370,13 @@ print('after game setup:')
 game.print_all_player_locations()
 game.print_headline()
 
-for n in range(50):
+for n in range(game.duration):
     print('count = {}'.format(n))
-    game.move()
-    game.print_all_player_locations()
+    play_moves = game.move()
+    print(play_moves)
 
+Path = Path + '/games'
+game.save_record(Path)
+print(game.game_record)
 
 # done.
-
